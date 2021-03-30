@@ -23,6 +23,11 @@ def run(filepath):
         instruction = (' '.join(instruction.split())) #Remove unholy whitespice at the beginning and end of lines. Allows for easier writing of code.
         instructionData = (instruction.split(" ")) ##Split the line up into it's parts
 
+        #Adds ability to make inline comments, removes any words that begin with # from instruction
+        for word in instructionData:
+            if word.startswith("#"):
+                instructionData.remove(word)
+
         #Prepare, might get a bit messy, probably a nicer way of doing this
 
         #get opcode and operand

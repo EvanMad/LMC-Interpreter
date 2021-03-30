@@ -3,7 +3,7 @@ STA x
 LDA x
 STA y
   LOOP LDA           y
-BRZ END
+BRZ END #Test
 SUB ONE
 STA y
 LDA ANS
