@@ -8,4 +8,8 @@ I think at some point I'll write an emulator / toy compiler that read and writes
 Pretty simple & easy python interpreter for text ASM files, so far works on basically every test I've put it through.
 test.asm and sub.asm are provided as example files
 
+Examples Below:
 
+ `interpreter --file=test.asm --debug=0` (Squares your number)
+
+ `interpreter --file=sub.asm --debug=1` (Subtracts your numbers)
