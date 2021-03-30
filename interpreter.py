@@ -1,56 +1,62 @@
-instructions = {
-    "INP":901,
-    "OUT":902,
-    "ADD":1,
-    "SUB":2,
-    "STA":3,
-    "LDA":5,
-    "HLT":0,
-}
+import argparse
 
-debug = False
-memory = {}
+parser = argparse.ArgumentParser(description='Process some integers.')
+parser.add_argument("--file", help="file to run")
+parser.add_argument("--debug", help="debug info, 0 for no, 1 for yes")
+args = parser.parse_args()
 
-def run():
-    pc = 0
+filepath = args.file
+debug = int(args.debug)
+
+def run(filepath):
+    memory = {} # Dict for storing variables and their values, quite handy really.
+    pc = 0 #pc = programcounter
     accumulator = 0
-    i = 0
-    data = open("test.asm", "r").readlines()
-    lines = []
-    for line in data:
-        line = (line.rstrip())
-        lineData = (line.split(" "))
+    i = 0 #basically the linecount, it's only needed for the jump commands so it knows the instruction to jump to
+
+    data = open(filepath, "r").readlines() #Get file
+    instructions = []
+
+    ##Read and process the lines into something more manageable, needs to be done first so we can do stuff like variable assignment at the end rather than beginning.
+    for instruction in data:
+        instruction = (instruction.rstrip()) #Remove unholy whitespice at the beginning and end of lines
+        instructionData = (instruction.split(" ")) ##Split the line up into it's parts
+
+        #Prepare, might get a bit messy, probably a nicer way of doing this
 
         #get opcode and operand
-        opcode = lineData[0]
-        if len(lineData) == 2:
-            operand = lineData[1]
-        elif len(lineData) > 2 and lineData[1] == "DAT":
-            memory[lineData[0]] = lineData[2]
+        opcode = instructionData[0]
+        #Standard opcode/operand duo
+        if len(instructionData) == 2:
+            operand = instructionData[1]
+        #So this if it's a DAT ARSE 0 variable type thing
+        elif len(instructionData) > 2 and instructionData[1] == "DAT":
+            memory[instructionData[0]] = instructionData[2]
         #So this is a loop thing
-        elif len(lineData) > 2:
-            memory[lineData[0]] = i
-            opcode = lineData[1]
-            operand = lineData[2]
+        elif len(instructionData) > 2:
+            memory[instructionData[0]] = i
+            opcode = instructionData[1]
+            operand = instructionData[2]
         else:
             operand = None
         
-        
-        lines.append([opcode, operand])
+        instructions.append([opcode, operand])
         i+=1
+
     if debug:
-        print(lines)
+        print(instructions)
 
+    #This is actually running the instructrions after they've been processed
     while True:
-        opcode = lines[pc][0]
-        operand = lines[pc][1]
+        opcode = instructions[pc][0]
+        operand = instructions[pc][1]
         pc+=1
+
+        #Debug info
         if debug:
-            print("pc: {}, Instruction: {}".format(pc, opcode))
-
-        #if opcode not in instructions:
-            #print(lines[pc])
-
+            print("pc: {}, Opcode: {}, Operand: {}".format(pc, opcode, operand))
+        
+        #Turns out python has no switch case, who knew?, this will do, it rhymes so it must be true.
         if opcode == "INP":
             accumulator = int(input())
         if opcode == "STA":
@@ -69,11 +75,13 @@ def run():
         if opcode == "BRP":
             if accumulator == 0 or accumulator > 0:
                 pc = memory[operand]
-                #pc = int(operand)
         if opcode == "BRZ":
             if accumulator == 0:
                 pc = memory[operand]
+
         if opcode == "HLT":
             break
-run()
+
+if __name__ == "__main__":
+    run(filepath)
 
