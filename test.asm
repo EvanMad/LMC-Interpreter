@@ -2,7 +2,7 @@ INP
 STA x
 LDA x
 STA y
-LOOP LDA y
+  LOOP LDA           y
 BRZ END
 SUB ONE
 STA y
