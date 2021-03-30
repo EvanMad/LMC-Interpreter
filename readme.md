@@ -7,7 +7,7 @@ I think at some point I'll write an emulator / toy compiler that read and writes
 ## Interpreter
 Pretty simple & easy python interpreter for text ASM files, so far works on basically every test I've put it through.
 some simple examples are available in a folder.
-Example partially programs taken from here https://www.yorku.ca/sychen/research/LMC/
+Example partially programs taken from [here](https://www.yorku.ca/sychen/research/LMC/).
 
 Examples Below:
 
