@@ -8,6 +8,20 @@ args = parser.parse_args()
 filepath = args.file
 debug = int(args.debug)
 
+valid_instructions = [
+    "INP",
+    "OUT",
+    "ADD",
+    "SUB",
+    "STA",
+    "LDA",
+    "HLT",
+    "DAT",
+    "BRA",
+    "BRZ",
+    "BRP",
+]
+
 
 def run(filepath):
     memory = {} # Dict for storing variables and their values, quite handy really.
@@ -20,6 +34,8 @@ def run(filepath):
 
     ##Read and process the lines into something more manageable, needs to be done first so we can do stuff like variable assignment at the end rather than beginning.
     for instruction in data:
+        if instruction == "\n":
+            continue
         instruction = (' '.join(instruction.split())) #Remove unholy whitespice at the beginning and end of lines. Allows for easier writing of code.
         instructionData = (instruction.split(" ")) ##Split the line up into it's parts
 
@@ -28,21 +44,32 @@ def run(filepath):
             if word.startswith("#"):
                 instructionData.remove(word)
 
-        #Prepare, might get a bit messy, probably a nicer way of doing this
+        # Prepare, might get a bit messy, probably a nicer way of doing this
 
-        #get opcode and operand
+        # get opcode and operand
         opcode = instructionData[0]
-        #Standard opcode/operand duo
-        if len(instructionData) == 2:
-            operand = instructionData[1]
-        #So this if it's a DAT ARSE 0 variable type thing
-        elif len(instructionData) > 2 and instructionData[1] == "DAT":
-            memory[instructionData[0]] = instructionData[2]
-        #So this is a loop thing
-        elif len(instructionData) > 2:
+
+        # If it's not a standard instruction
+        if opcode not in valid_instructions:
+            #Assume (for now) that it's a loop setter
             memory[instructionData[0]] = i
             opcode = instructionData[1]
-            operand = instructionData[2]
+
+            if len(instructionData) == 2:
+                operand = None
+            # Sometimes instructions are formatted as ARSE DAT 0, which is perfectly acceptable apparently.
+            elif instructionData[1] == "DAT":
+                memory[instructionData[0]] = instructionData[2]
+            # This checks if it's a standard loop setter with both an opcode and an operand, if so set them
+            elif len(instructionData) == 3:
+                operand = instructionData[2]
+
+        #Standard opcode/operand duo
+        elif len(instructionData) == 2:
+            operand = instructionData[1]
+        #So this checks if it's a DAT ARSE 0 variable assignemnt type, I've commented it out because it's not in the reference implimentation by higginson.
+        #elif len(instructionData) > 2 and instructionData[1] == "DAT":
+            #memory[instructionData[0]] = instructionData[2]
         else:
             operand = None
         
@@ -51,13 +78,15 @@ def run(filepath):
 
     if debug:
         print(instructions)
+        print(memory)
 
     #This is actually running the instructrions after they've been processed
     while True:
         opcode = instructions[pc][0]
         operand = instructions[pc][1]
         pc += 1
-
+        if debug:
+            print(memory)
         #Debug info
         if debug:
             print("pc: {}, Opcode: {}, Operand: {}".format(pc, opcode, operand))
@@ -65,12 +94,9 @@ def run(filepath):
         #Turns out python has no switch case, who knew?, this will do, it rhymes so it must be true.
         if opcode == "INP":
             accumulator = int(input())
-            #I don't know if this is standard implementation
-            # I've never seen  it before, but it works on https://peterhigginson.co.uk/LMC/
-            # If it's good enough for higginson it's good enough for me.
-            # Basically lets you go INP A and store it straight into A
-            if operand is not None:
-                memory[operand] = accumulator
+            # This has also been commented out, some code examples use it, but the almighty higginson does not approve.
+            #if operand is not None:
+                #memory[operand] = accumulator
         if opcode == "STA":
             memory[operand] = accumulator
         if opcode == "LDA":
