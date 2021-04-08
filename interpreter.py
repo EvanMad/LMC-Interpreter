@@ -85,11 +85,9 @@ def run(filepath):
         opcode = instructions[pc][0]
         operand = instructions[pc][1]
         pc += 1
-        if debug:
-            print(memory)
         #Debug info
         if debug:
-            print("pc: {}, Opcode: {}, Operand: {}".format(pc, opcode, operand))
+            print("pc: {}, Opcode: {}, Operand: {}, memory: {}".format(pc, opcode, operand, memory))
         
         #Turns out python has no switch case, who knew?, this will do, it rhymes so it must be true.
         if opcode == "INP":
